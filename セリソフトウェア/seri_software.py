@@ -1,38 +1,41 @@
 import pyttsx3
 import time
 import random
-import keyboard  # キーボード入力を検出
+import keyboard  # キーボード入力を検出するためのライブラリ
 
 # 音声読み上げ用の関数
 def speak(text, rate=150):
     """
-    読み上げを行う関数。読み上げ速度をカスタマイズ可能。
+    音声読み上げ関数
     """
-    engine = pyttsx3.init()
+    engine = pyttsx3.init()  # pyttsx3の初期化
     engine.setProperty('rate', rate)  # 読み上げ速度を設定
-    engine.say(text)
-    engine.runAndWait()
+    engine.say(text)  # 読み上げ開始
+    engine.runAndWait()  # 読み上げが完了するまで待機
 
 def start_auction(item_number, item_name, grade, weight, starting_price):
     """
     入札処理を行う関数
     """
     current_price = starting_price  # 初期金額
-    last_bid_time = time.time()  # 最後の入札時間
-    auction_duration = 10  # 10秒間入札がなければ終了
+    auction_duration = 5  # 5秒間入札がなければ終了
 
     # 上場番号と品物情報の読み上げ
     print(f"\n=== 上場番号 {item_number} ===")
     print(f"品物「{item_name}」、ランク「{grade}」、重さ「{weight}kg」、初期金額: {current_price}円")
     speak(f"上場番号 {item_number}。品物「{item_name}」、ランク「{grade}」、重さは {weight}kg。初期金額は {current_price}円です。", rate=150)
 
+    # 読み上げが完了した後にタイマーを開始
+    last_bid_time = time.time()
+
     print("\nスペースキーを押して入札を行います。終了するには 'q' を入力してください。")
 
     while True:
         # 現在の時刻と最終入札時間を比較
-        if time.time() - last_bid_time >= auction_duration:
-            print(f"\n10秒間入札がなかったため、上場番号 {item_number} の入札は終了しました。最終金額は {current_price}円です。")
-            speak(f"10秒間入札がなかったため、上場番号 {item_number} の入札は終了しました。最終金額は {current_price}円です。", rate=150)
+        elapsed_time = time.time() - last_bid_time
+        if elapsed_time >= auction_duration:
+            print(f"\n5秒間入札がなかったため、上場番号 {item_number} の入札は終了しました。最終金額は {current_price}円です。")
+            speak(f"5秒間入札がなかったため、上場番号 {item_number} の入札は終了しました。最終金額は {current_price}円です。", rate=150)
             break  # 入札終了
 
         # キー入力の監視
@@ -53,8 +56,7 @@ def start_auction(item_number, item_name, grade, weight, starting_price):
             # 最後の入札時間を更新（読み上げ完了後）
             last_bid_time = time.time()
 
-            # スペースキーの入力を防止するために少し待つ
-            time.sleep(0.3)
+            # 連続反応を許可するためスリープなし
 
 def main():
     """
@@ -94,5 +96,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
